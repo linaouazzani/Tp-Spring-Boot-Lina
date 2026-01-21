@@ -3,14 +3,29 @@ package pharmacie.entity;
 import java.util.LinkedList;
 import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @RequiredArgsConstructor @ToString
+@Getter
+@Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
+@ToString
 public class Categorie {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +34,7 @@ public class Categorie {
 
 	@NonNull
 	@Size(min = 1, max = 255)
-	@Column(unique=true, length = 255)
+	@Column(unique = true, length = 255)
 	@NotBlank // pour éviter les libellés vides
 	private String libelle;
 
@@ -28,8 +43,13 @@ public class Categorie {
 	private String description;
 
 	@ToString.Exclude
-	// CascadeType.ALL signifie que toutes les opérations CRUD sur la catégorie sont également appliquées à ses médicaments
-	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "categorie")
+	// CascadeType.ALL signifie que toutes les opérations CRUD sur la catégorie sont
+	// également appliquées à ses médicaments
+	@OneToMany(cascade = { CascadeType.ALL }, mappedBy = "categorie")
 	private List<Medicament> medicaments = new LinkedList<>();
+
+	public boolean hasNOMedicaments() {
+		return this.medicaments.isEmpty();
+	}
 
 }

@@ -1,61 +1,49 @@
 package pharmacie.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDate; // Import manquant ajouté
-import java.util.ArrayList;
+import java.sql.Date;
+import java.util.LinkedList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType; // Préférable pour initialiser la liste
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.validation.constraints.Size;
+
+import lombok.*;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @RequiredArgsConstructor @ToString
+@NoArgsConstructor
+@ToString
 public class Commande {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Integer numero;
+    private Integer numero = null;
 
-    @NonNull
-    @NotNull
-    private LocalDate saisieLe;
+    @NotBlank
+    private Date saisieLe;
 
-    private LocalDate envoyeeLe;
+    private Date envoyeeLe; // nullable - la commande est en cours si null
 
-    @PositiveOrZero
-    private BigDecimal port = BigDecimal.ZERO;
+    @NotBlank
+    private BigDecimal montantTotal;
 
-    @NonNull
-    @NotBlank // Assure que le nom du destinataire n'est pas vide
+    @NotBlank
     private String destinataire;
 
-    @PositiveOrZero
-    private BigDecimal remise = BigDecimal.ZERO;
+    @NotBlank
+    private BigDecimal remise;
+
+    @Embedded
+    private AdressePostale adresseLivraison;
 
     @ManyToOne(optional = false)
     @NonNull
-    @NotNull
-    private Dispensaire dispensaire;
-
-    @ManyToOne(cascade = CascadeType.ALL) // Selon le schéma logique, plusieurs commandes peuvent partager une adresse
-    private AdressePostale adresseLivraison;
-
-    @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Ligne> lignes = new ArrayList<>();
+    private Dispencaire dispencaire;
+
+    @ToString.Exclude
+    @OneToMany(cascade = { CascadeType.ALL }, mappedBy = "commande")
+    private List<Ligne> lignes = new LinkedList<>();
+
 }
